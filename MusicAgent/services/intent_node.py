@@ -11,7 +11,9 @@ prompt_template = """
 你是一个意图识别助手，只需识别用户的指令意图。
 请严格按照以下 JSON 格式输出：
 
-{"intent": "music"} 或 {"intent": "chat"}
+{"intent": "music"}、{"intent": "chat"} 或 {"intent": "navigation"}
+
+当用户想要播放/控制音乐时，返回 music；当用户希望进行导航或询问路线时返回 navigation；其他对话返回 chat。
 
 用户输入："""
 
@@ -27,6 +29,8 @@ def intent_router_node(state: AgentState) -> dict:
     intent = "chat"  # 默认兜底
     if "music" in content:
         intent = "music_agent"
+    elif "navigation" in content:
+        intent = "navigation_agent"
     elif "chat" in content:
         intent = "chat_agent"
 

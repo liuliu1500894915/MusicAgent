@@ -30,16 +30,27 @@ def infer(request: InferenceRequest):
         print("router📄 内容类型：", type(last_msg.content), "，内容值：", last_msg.content)
 
         if last_msg.type == "tool":
-            # 若是字符串形式的 dict，则使用 eval 或 json.loads
+            # 若是字符串形式的 dict，则使用 json.loads
             content = last_msg.content
             try:
                 data = json.loads(content) if isinstance(content, str) else content
+                response_type = data.get("type")
 
-                return {
-                    "type": "music",
-                    "intent": data.get("intent"),
-                    "song": data.get("song")
-                }
+                if response_type == "music":
+                    return {
+                        "type": "music",
+                        "intent": data.get("intent"),
+                        "song": data.get("song")
+                    }
+                elif response_type == "navigation":
+                    return {
+                        "type": "navigation",
+                        "destination": data.get("destination"),
+                        "poi_type": data.get("poi_type"),
+                        "mode": data.get("mode"),
+                    }
+                else:
+                    raise ValueError(f"未知的 tool 响应类型：{response_type}")
             except Exception as e:
                 print("⚠️ tool message 内容解析失败：", str(e))
                 raise
